@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">TwitterClient</string>
+    <string name="login_label">Connect to Twitter</string>
+
+    <string name="menu_settings">Settings</string>
+    <string name="default_username">Deepak</string>
+    <string name="default_body">Body</string>
+    <string name="say_some_thing">Say Something...</string>
+    <string name="button_tweet_it">Tweet it!!!</string>
+    <string name="create_tweet">Tweet...</string>
+
 </resources>
