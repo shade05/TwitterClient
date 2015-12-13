@@ -5,7 +5,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,27 +13,18 @@ import java.util.List;
 public class Tweet {
 
     private String body;
-
     private long uid;
-
     private String createdAt;
-
     private User user;
 
-    public String getBody() {
-        return body;
+    public Tweet(User user, long uid, String body, String createdAt) {
+        this.user = user;
+        this.uid = uid;
+        this.body = body;
+        this.createdAt = createdAt;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public long getUid() {
-        return uid;
-    }
-
-    public User getUser() {
-        return user;
+    public Tweet() {
     }
 
     public static Tweet fromJSON(JSONObject jsonObject) {
@@ -65,5 +55,21 @@ public class Tweet {
         }
 
         return tweets;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public long getUid() {
+        return uid;
+    }
+
+    public User getUser() {
+        return user;
     }
 }

@@ -1,6 +1,8 @@
 package com.codepath.courses.twitterclient;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,15 +18,18 @@ import android.widget.TextView;
 
 import com.codepath.courses.twitterclient.di.AppController;
 import com.codepath.courses.twitterclient.models.Tweet;
+import com.codepath.courses.twitterclient.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -40,6 +45,8 @@ public class TwitterListFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private List<Tweet> mTweets;
+
+    private User mUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,6 +69,7 @@ public class TwitterListFragment extends Fragment {
                 })
         );
         populateTimeline();
+        mUser = (User) getActivity().getIntent().getSerializableExtra("login_user");
         return mRecyclerView;
     }
 
@@ -80,6 +88,26 @@ public class TwitterListFragment extends Fragment {
             }
 
         });
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        Log.d(TAG, "Entering into this onActivityResult fragment");
+        if (resultCode == Activity.RESULT_OK) {
+
+            if (mUser != null) {
+                // only insert the tweet in timeline if the user is fetched
+                String tweetBody = data.getStringExtra("tweet");
+                long uid = mUser.getUid();
+                String createdAt = "now";
+
+                Tweet tweet = new Tweet(mUser, uid, tweetBody, createdAt);
+                // insert the tweet at the beginning of the stream
+                mTweets.add(0, tweet);
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+
+            }
+        }
     }
 
     private void setupRecyclerView(RecyclerView recyclerView) {
@@ -116,6 +144,15 @@ public class TwitterListFragment extends Fragment {
             viewHolder.mUserNameTV.setText(viewHolder.mTweet.getUser().getName());
             viewHolder.mBodyTV.setText(viewHolder.mTweet.getBody());
 
+            String relativeTS = null;
+            try {
+                Date date = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy").parse(viewHolder.mTweet.getCreatedAt());
+                relativeTS = TimeUtil.getTimeAgo(date.getTime());
+            } catch (ParseException e) {
+                relativeTS = "just now";
+            }
+            viewHolder.mTimeStampTV.setText(relativeTS);
+
             Picasso.with(mContext).load(viewHolder.mTweet.getUser().getProfileImageUrl()).into(viewHolder.mProfileiImageIV);
         }
 
@@ -129,6 +166,7 @@ public class TwitterListFragment extends Fragment {
             public final TextView mUserNameTV;
             public final TextView mBodyTV;
             public final ImageView mProfileiImageIV;
+            public final TextView mTimeStampTV;
             public Tweet mTweet;
 
             public ViewHolder(View view) {
@@ -137,8 +175,8 @@ public class TwitterListFragment extends Fragment {
                 mUserNameTV = (TextView) view.findViewById(R.id.tvUserName);
                 mBodyTV = (TextView) view.findViewById(R.id.tvBody);
                 mProfileiImageIV = (ImageView) view.findViewById(R.id.ivProfileImage);
+                mTimeStampTV = (TextView) view.findViewById(R.id.tvTimeStamp);
             }
         }
     }
 }
-

@@ -1,5 +1,6 @@
 package com.codepath.courses.twitterclient;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.codepath.courses.twitterclient.di.AppController;
+import com.codepath.courses.twitterclient.models.Tweet;
 import com.codepath.courses.twitterclient.models.User;
 
 import java.util.ArrayList;
@@ -55,6 +57,15 @@ public class TimelineActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        Log.d(TAG, "Entering into this onActivityResult activity");
+        super.onActivityResult(requestCode, resultCode, data);
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,7 +80,7 @@ public class TimelineActivity extends AppCompatActivity {
             case R.id.menuTweet:
                 User u = (User)getIntent().getSerializableExtra("login_user");
                 Intent i = PostNewTweetActivity.getIntent(this, u);
-                startActivity(i);
+                startActivityForResult(i, 50);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -92,7 +103,6 @@ public class TimelineActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
     static class Adapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
