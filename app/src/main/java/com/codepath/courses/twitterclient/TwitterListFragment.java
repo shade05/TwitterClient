@@ -24,6 +24,7 @@ import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,6 +61,8 @@ public class TwitterListFragment extends Fragment {
         mTweets = new ArrayList<>();
         TweetRecyclerViewAdapter tweetRecyclerViewAdapter = new TweetRecyclerViewAdapter(this.getActivity(), mTweets);
         mRecyclerView.setAdapter(tweetRecyclerViewAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
         mRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
@@ -68,9 +71,38 @@ public class TwitterListFragment extends Fragment {
                     }
                 })
         );
+        mRecyclerView.addOnScrollListener(new EndLessScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(final int currentpage) {
+                customLoadMoreDataFromApi(currentpage);
+            }
+        });
         populateTimeline();
         mUser = (User) getActivity().getIntent().getSerializableExtra("login_user");
         return mRecyclerView;
+    }
+
+    private void customLoadMoreDataFromApi(int offset){
+        Log.i("INFO", "load more " + offset);
+
+        if (mTweets.size() == 0)
+            return;
+
+        Tweet lastTweet = mTweets.get(mTweets.size()-1);
+        long maxId = lastTweet.getUid();
+
+        mTwitterClient.getHomeTimeline(maxId, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                Log.d("DEBUG", response.toString());
+                mTweets.addAll(Tweet.fromJSONArray(response));
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("DEBUG", errorResponse.toString());
+            }
+        });
     }
 
     private void populateTimeline() {
