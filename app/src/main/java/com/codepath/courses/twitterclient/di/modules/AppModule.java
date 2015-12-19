@@ -13,6 +13,8 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
+    private static final String TAG = "AppModule";
+
     Application mApplication;
 
     Resources mResources;
@@ -20,6 +22,8 @@ public class AppModule {
     public AppModule(Application application) {
         mApplication = application;
     }
+
+
 
     @Provides
     @Singleton
@@ -38,5 +42,4 @@ public class AppModule {
     TwitterClient providesTwitterClient() {
         return (TwitterClient) TwitterClient.getInstance(TwitterClient.class, mApplication);
     }
-
 }

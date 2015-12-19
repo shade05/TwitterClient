@@ -1,6 +1,5 @@
 package com.codepath.courses.twitterclient;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
@@ -84,6 +82,12 @@ public class PostNewTweetActivity extends AppCompatActivity {
                         intent.putExtra("tweet", status);
                         setResult(RESULT_OK, intent);
                         PostNewTweetActivity.this.finish();
+                    }
+
+                    @Override
+                    public void onFailure(final int statusCode, final Header[] headers, final Throwable throwable, final JSONObject errorResponse) {
+                        Log.d(TAG, "Error occured" + throwable.getMessage());
+                        Log.d(TAG, errorResponse.toString());
                     }
                 });
             }

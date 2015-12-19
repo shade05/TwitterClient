@@ -2,7 +2,6 @@ package com.codepath.courses.twitterclient;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
 
 /**
  * Created by deepaks on 12/13/15.
@@ -51,5 +50,7 @@ public abstract class EndLessScrollListener extends RecyclerView.OnScrollListene
         }
     }
 
-    public abstract void onLoadMore(int current_page);
+    // Defines the process for actually loading more data based on page
+    public abstract void onLoadMore(int page);
+
 }

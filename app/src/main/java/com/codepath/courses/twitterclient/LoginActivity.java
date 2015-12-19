@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import com.codepath.courses.twitterclient.di.AppController;
 import com.codepath.courses.twitterclient.models.User;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -37,8 +38,7 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	// i.e Display application "homepage"
 	@Override
 	public void onLoginSuccess() {
-		final Intent i = new Intent(this, TimelineActivity.class);
-
+		final Intent i = new Intent(this, LaunchActivity.class);
 		Log.d(TAG, "on login success has been called");
 
 		getClient().getVerifyCredentials(new JsonHttpResponseHandler() {
@@ -46,7 +46,7 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 			@Override
 			public void onSuccess(final int statusCode, final Header[] headers, final JSONObject json) {
 				User u = User.fromJSON(json);
-				i.putExtra("login_user", u);
+				((AppController) getApplication()).setSignedInUser(u);
 				startActivity(i);
 				Toast.makeText(LoginActivity.this, "It is a success", Toast.LENGTH_SHORT).show();
 			}
@@ -68,7 +68,7 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	}
 
 	// Click handler method for the button used to start OAuth flow
-	// Uses the client to initiate OAuth authorization
+	// Uses the mClient to initiate OAuth authorization
 	// This should be tied to a button used to login
 	public void loginToRest(View view) {
 		getClient().connect();

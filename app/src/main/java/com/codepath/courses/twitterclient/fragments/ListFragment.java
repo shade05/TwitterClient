@@ -1,4 +1,8 @@
-package com.codepath.courses.twitterclient;
+package com.codepath.courses.twitterclient.fragments;
+
+/**
+ * Created by deepaks on 12/18/15.
+ */
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,15 +20,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codepath.courses.twitterclient.EndLessScrollListener;
+import com.codepath.courses.twitterclient.R;
+import com.codepath.courses.twitterclient.RecyclerItemClickListener;
+import com.codepath.courses.twitterclient.TimeUtil;
 import com.codepath.courses.twitterclient.di.AppController;
 import com.codepath.courses.twitterclient.models.Tweet;
 import com.codepath.courses.twitterclient.models.User;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
-
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,27 +35,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.inject.Inject;
 
-public class TwitterListFragment extends Fragment {
+public abstract class ListFragment extends Fragment {
 
     private static String TAG = "InstagramPhotoListFragment";
 
-    @Inject
-    TwitterClient mTwitterClient;
+    RecyclerView mRecyclerView;
 
-    private RecyclerView mRecyclerView;
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    List<Tweet> mTweets;
 
-    private List<Tweet> mTweets;
-
-    private User mUser;
+    User mUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((AppController) getActivity().getApplication()).getAppComponent().inject(this);
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) inflater.inflate(
                 R.layout.fragment_twitter_timeline_list, container, false);
         mRecyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.recyclerview);
@@ -77,50 +74,13 @@ public class TwitterListFragment extends Fragment {
                 customLoadMoreDataFromApi(currentpage);
             }
         });
-        populateTimeline();
-        mUser = (User) getActivity().getIntent().getSerializableExtra("login_user");
+        mUser = ((AppController) getActivity().getApplication()).getSignedInUser();
         return mRecyclerView;
     }
 
-    private void customLoadMoreDataFromApi(int offset){
-        Log.i("INFO", "load more " + offset);
+    public abstract void customLoadMoreDataFromApi(int offset);
 
-        if (mTweets.size() == 0)
-            return;
-
-        Tweet lastTweet = mTweets.get(mTweets.size()-1);
-        long maxId = lastTweet.getUid();
-
-        mTwitterClient.getHomeTimeline(maxId, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.d("DEBUG", response.toString());
-                mTweets.addAll(Tweet.fromJSONArray(response));
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d("DEBUG", errorResponse.toString());
-            }
-        });
-    }
-
-    private void populateTimeline() {
-        mTwitterClient.getHomeTimeline(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(final int statusCode, final Header[] headers, final JSONArray response) {
-                Log.d(TAG, response.toString());
-                mTweets.addAll(Tweet.fromJSONArray(response));
-                mRecyclerView.getAdapter().notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(final int statusCode, final Header[] headers, final Throwable throwable, final JSONArray errorResponse) {
-                Log.d(TAG, errorResponse.toString());
-            }
-
-        });
-    }
+    public abstract void populateTimeline();
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {

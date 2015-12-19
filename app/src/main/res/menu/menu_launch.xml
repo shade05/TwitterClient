@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".LaunchActivity">
+
+
+    <item
+        android:id="@+id/miComposeNewTweet"
+        android:icon="@drawable/compose_white"
+        android:onClick="onCompose"
+        android:title="Profile"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/miProfile"
+        android:icon="@drawable/ic_profile"
+        android:onClick="onProfileView"
+        android:title="Profile"
+        app:showAsAction="ifRoom"/>
+
+</menu>

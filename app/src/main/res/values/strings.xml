@@ -9,4 +9,6 @@
     <string name="button_tweet_it">Tweet it!!!</string>
     <string name="create_tweet">Tweet...</string>
 
+    <string name="action_settings">Settings</string>
+
 </resources>

@@ -1,12 +1,10 @@
 package com.codepath.courses.twitterclient;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -18,7 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.codepath.courses.twitterclient.di.AppController;
-import com.codepath.courses.twitterclient.models.Tweet;
+import com.codepath.courses.twitterclient.fragments.TwitterListFragment;
 import com.codepath.courses.twitterclient.models.User;
 
 import java.util.ArrayList;

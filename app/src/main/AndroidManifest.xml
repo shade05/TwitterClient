@@ -36,11 +36,18 @@
                     android:scheme="oauth"/>
             </intent-filter>
         </activity>
-        <activity android:name=".TimelineActivity"  android:theme="@style/AppTheme.NoActionBar">
+        <activity
+            android:name=".TimelineActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".PostNewTweetActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".LaunchActivity">
         </activity>
 
-        <activity android:name=".PostNewTweetActivity"  android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>
