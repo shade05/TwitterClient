@@ -27,8 +27,6 @@ public class UserTimelinePageFragment extends ListFragment {
     @Inject
     TwitterClient mTwitterClient;
 
-
-
     public static UserTimelinePageFragment newInstance(String screenName) {
         UserTimelinePageFragment fragment = new UserTimelinePageFragment();
         Bundle args = new Bundle();
@@ -73,8 +71,8 @@ public class UserTimelinePageFragment extends ListFragment {
     }
 
     public void populateTimeline() {
-
         String screenName = getArguments().getString("screen_name");
+        Log.d(TAG, "Screen Name is : " + screenName);
         mTwitterClient.getUserTimeline(screenName, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(final int statusCode, final Header[] headers, final JSONArray response) {

@@ -18,19 +18,17 @@ import javax.inject.Inject;
 
 public class LaunchActivity extends AppCompatActivity {
 
-    final  int REQUEST_CODE_COMPOSE = 50;
-    ViewPager viewPager;
-
     private static final String TAG = "Launch";
-
+    final int REQUEST_CODE_COMPOSE = 50;
+    ViewPager viewPager;
     @Inject
     TwitterClient mTwitterClient;
+    User signedInUser;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_launch, menu);
-
         return true;
     }
 
@@ -39,6 +37,7 @@ public class LaunchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
         ((AppController) getApplication()).getAppComponent().inject(this);
+        signedInUser = ((AppController) getApplication()).getSignedInUser();
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -48,8 +47,6 @@ public class LaunchActivity extends AppCompatActivity {
         PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         // Attach the view pager to the tab strip
         tabsStrip.setViewPager(viewPager);
-
-
     }
 
     @Override
@@ -67,8 +64,9 @@ public class LaunchActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onProfileView(MenuItem mi){
+    public void onProfileView(MenuItem mi) {
         Intent i = new Intent(this, ProfileActivity.class);
+        i.putExtra("screen_name", signedInUser.getScreenName());
         startActivity(i);
     }
 
@@ -78,11 +76,9 @@ public class LaunchActivity extends AppCompatActivity {
         startActivityForResult(i, REQUEST_CODE_COMPOSE);
     }
 
-    private String getFragmentTag()
-    {
+    private String getFragmentTag() {
         return "android:switcher:" + viewPager.getId() + ":" + 0;
     }
-
 
 
     @Override
@@ -92,6 +88,5 @@ public class LaunchActivity extends AppCompatActivity {
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             fragment.onActivityResult(requestCode, resultCode, data);
         }
-
     }
 }

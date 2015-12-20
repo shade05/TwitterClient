@@ -52,7 +52,6 @@ public class TimelineActivity extends AppCompatActivity {
         if (viewPager != null) {
             setupViewPager(viewPager);
         }
-
     }
 
     @Override

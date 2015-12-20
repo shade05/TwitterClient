@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.courses.twitterclient.EndLessScrollListener;
+import com.codepath.courses.twitterclient.ProfileActivity;
 import com.codepath.courses.twitterclient.R;
 import com.codepath.courses.twitterclient.RecyclerItemClickListener;
 import com.codepath.courses.twitterclient.TimeUtil;
@@ -38,7 +39,7 @@ import java.util.List;
 
 public abstract class ListFragment extends Fragment {
 
-    private static String TAG = "InstagramPhotoListFragment";
+    private static String TAG = "ListFragment";
 
     RecyclerView mRecyclerView;
 
@@ -49,16 +50,23 @@ public abstract class ListFragment extends Fragment {
     User mUser;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) inflater.inflate(
                 R.layout.fragment_twitter_timeline_list, container, false);
+
         mRecyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.recyclerview);
         setupRecyclerView(mRecyclerView);
 
         mTweets = new ArrayList<>();
         TweetRecyclerViewAdapter tweetRecyclerViewAdapter = new TweetRecyclerViewAdapter(this.getActivity(), mTweets);
         mRecyclerView.setAdapter(tweetRecyclerViewAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getActivity());
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
         mRecyclerView.addOnItemTouchListener(
@@ -75,7 +83,7 @@ public abstract class ListFragment extends Fragment {
             }
         });
         mUser = ((AppController) getActivity().getApplication()).getSignedInUser();
-        return mRecyclerView;
+        return mSwipeRefreshLayout;
     }
 
     public abstract void customLoadMoreDataFromApi(int offset);
@@ -146,6 +154,15 @@ public abstract class ListFragment extends Fragment {
             viewHolder.mTimeStampTV.setText(relativeTS);
 
             Picasso.with(mContext).load(viewHolder.mTweet.getUser().getProfileImageUrl()).into(viewHolder.mProfileiImageIV);
+
+            viewHolder.mProfileiImageIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(mContext, ProfileActivity.class);
+                    i.putExtra("screen_name", viewHolder.mTweet.getUser().getScreenName());
+                    mContext.startActivity(i);
+                }
+            });
         }
 
         @Override

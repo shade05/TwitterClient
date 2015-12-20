@@ -1,13 +1,16 @@
 package com.codepath.courses.twitterclient;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.courses.twitterclient.di.AppController;
+import com.codepath.courses.twitterclient.fragments.UserTimelinePageFragment;
 import com.codepath.courses.twitterclient.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
@@ -25,14 +28,18 @@ public class ProfileActivity extends AppCompatActivity {
     @Inject
     TwitterClient mClient;
     User mUser;
+    User signedInUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         ((AppController) getApplication()).getAppComponent().inject(this);
+        signedInUser = ((AppController) getApplication()).getSignedInUser();
+        final View fragment = findViewById(R.id.flContainer);
 
-        JsonHttpResponseHandler handler = new JsonHttpResponseHandler(){
+
+        JsonHttpResponseHandler handler = new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 mUser = User.fromJSON(response);
@@ -42,21 +49,48 @@ public class ProfileActivity extends AppCompatActivity {
         };
 
 
-        // Get the screen name from the activity that launches this
         String screenName = getIntent().getStringExtra("screen_name");
 
-        if (screenName == null)
-            mClient.getUserInfo(handler);
-        else mClient.getOtherUserInfo(screenName, handler);
+        if (screenName == null) {
+            if (getIntent() != null) {
+
+            } else {
+                getIntent().putExtra("screen_name", mUser.getScreenName());
+            }
+        }
+
+        if (signedInUser == null) {
+            mClient.getVerifyCredentials(handler);
+        } else {
+            mClient.getOtherUserInfo(screenName, handler);
+        }
 
 
-        //if (savedInstanceState == null) {
-            //UserTimelinePageFragment fragment = UserTimelinePageFragment.newInstance(screenName);
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.flContainer) != null) {
 
-            //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            //ft.replace(R.id.flContainer, fragment);
-            //ft.commit();
-        //}
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create a new Fragment to be placed in the activity layout
+            UserTimelinePageFragment firstFragment = new UserTimelinePageFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            firstFragment.setArguments(getIntent().getExtras());
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            transaction.replace(R.id.flContainer, firstFragment);
+            //transaction.addToBackStack(null);
+            transaction.commit();
+        }
     }
 
     private void populateProfileHeader() {
